@@ -14,9 +14,9 @@ namespace Play.Catalog.Service.Controllers
     {
         private static readonly List<ItemDto> items = new()
         {
-           new ItemDto(Guid.NewGuid(),"Aly","Restores a small amount of HP",5,DateTimeOffset.UtcNow),
-           new ItemDto(Guid.NewGuid(),"Samir","Restores a small amount of HP",7,DateTimeOffset.UtcNow),
-           new ItemDto(Guid.NewGuid(),"Hatem","Restores a small amount of HP",20,DateTimeOffset.UtcNow),
+           new ItemDto(Guid.NewGuid(),"Gun","Restores a big amount of HP",5,DateTimeOffset.UtcNow),
+           new ItemDto(Guid.NewGuid(),"Knife","Restores a medium amount of HP",7,DateTimeOffset.UtcNow),
+           new ItemDto(Guid.NewGuid(),"Stick","Restores a small amount of HP",20,DateTimeOffset.UtcNow),
         };
 
         // GET /items
