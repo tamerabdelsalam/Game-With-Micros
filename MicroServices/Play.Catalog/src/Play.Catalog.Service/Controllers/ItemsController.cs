@@ -72,7 +72,7 @@ namespace Play.Catalog.Service.Controllers
 
             item.Name = updateItemDto.Name;
             item.Description = updateItemDto.Description;
-            item.Price = item.Price;
+            item.Price = updateItemDto.Price;
 
             await _itemsRepository.UpdateAsync(item);
 

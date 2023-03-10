@@ -1,9 +1,13 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 
 namespace Play.Catalog.Service
 {
@@ -19,6 +23,10 @@ namespace Play.Catalog.Service
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Serialize to have properties saved in db in a readable way
+            BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
+            BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
+
             services.AddControllers(options =>
             {
                 options.SuppressAsyncSuffixInActionNames = false;
