@@ -4,32 +4,31 @@ using System.Threading.Tasks;
 using MongoDB.Driver;
 using Play.Catalog.Service.Enities;
 
-namespace Play.Catalog.Service.Repositories;
+namespace Play.Catalog.Service.Repositories.Base;
 
-public class ItemsRepository : IItemsRepository
-{
-    private const string collectionName = "items";
-    private readonly IMongoCollection<Item> dbCollection;
-    private readonly FilterDefinitionBuilder<Item> filterBuilder = Builders<Item>.Filter;
+public class MongoRepository<T> : IRepository<T> where T :IEntity
+{   
+    private readonly IMongoCollection<T> dbCollection;
+    private readonly FilterDefinitionBuilder<T> filterBuilder = Builders<T>.Filter;
 
-    public ItemsRepository(IMongoDatabase database)
-    {      
-        dbCollection = database.GetCollection<Item>(collectionName);
+    public MongoRepository(IMongoDatabase database,string collectionName)
+    {
+        dbCollection = database.GetCollection<T>(collectionName);
     }
 
-    public async Task<IReadOnlyCollection<Item>> GetAllAsync()
+    public async Task<IReadOnlyCollection<T>> GetAllAsync()
     {
         return await dbCollection.Find(filterBuilder.Empty).ToListAsync();
     }
 
-    public async Task<Item> GetAsync(Guid id)
+    public async Task<T> GetAsync(Guid id)
     {
         var filter = filterBuilder.Where(m => m.Id == id);
 
         return await dbCollection.Find(filter).SingleOrDefaultAsync();
     }
 
-    public async Task CreateAsync(Item entity)
+    public async Task CreateAsync(T entity)
     {
         if (entity is null)
         {
@@ -39,7 +38,7 @@ public class ItemsRepository : IItemsRepository
         await dbCollection.InsertOneAsync(entity);
     }
 
-    public async Task UpdateAsync(Item entity)
+    public async Task UpdateAsync(T entity)
     {
         if (entity is null)
         {
