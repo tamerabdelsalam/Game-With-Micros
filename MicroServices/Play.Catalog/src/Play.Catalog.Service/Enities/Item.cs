@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Play.Common;
+using Play.Common.Interfaces;
 
 namespace Play.Catalog.Service.Enities;
 
