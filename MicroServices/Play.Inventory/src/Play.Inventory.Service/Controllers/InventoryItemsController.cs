@@ -10,6 +10,7 @@ using Play.Inventory.Service.Entities;
 
 namespace Play.Inventory.Service.Controllers;
 
+[ApiController]
 [Route("invItems")]
 public class InventoryItemsController : ControllerBase
 {
@@ -32,7 +33,7 @@ public class InventoryItemsController : ControllerBase
 
         var catalogItemDtos = await _catalogClient.GetCatalogItemsAsync();
 
-        var invItems = (await _invItemsRepository.GetAllAsync(invItem => invItem.UserId == userId));      
+        var invItems = (await _invItemsRepository.GetAllAsync(invItem => invItem.UserId == userId));
 
         var invItemDtos = invItems.Select(invItem =>
         {

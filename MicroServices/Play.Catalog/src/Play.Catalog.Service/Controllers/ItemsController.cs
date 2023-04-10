@@ -9,8 +9,7 @@ using Play.Common.Interfaces;
 
 namespace Play.Catalog.Service.Controllers
 {
-    [ApiController]
-    //[Route("api/[controller]")]
+    [ApiController]    
     [Route("items")]
     public class ItemsController : ControllerBase
     {
