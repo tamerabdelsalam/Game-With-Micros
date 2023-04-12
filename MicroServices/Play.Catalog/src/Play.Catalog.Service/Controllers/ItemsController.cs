@@ -9,11 +9,12 @@ using Play.Common.Interfaces;
 
 namespace Play.Catalog.Service.Controllers
 {
-    [ApiController]    
+    [ApiController]
     [Route("items")]
     public class ItemsController : ControllerBase
     {
         private readonly IRepository<Item> _itemsRepository;
+        private static int _requestsCounter = 0;
 
         public ItemsController(IRepository<Item> itemsRepository)
         {
@@ -22,9 +23,26 @@ namespace Play.Catalog.Service.Controllers
 
         // GET /items
         [HttpGet]
-        public async Task<IEnumerable<ItemDto>> GetAsync()
+        public async Task<ActionResult<IEnumerable<ItemDto>>> GetAsync()
         {
-            return (await _itemsRepository.GetAllAsync()).Select(item => item.AsDto());
+            _requestsCounter++;
+            Console.WriteLine($"Request {_requestsCounter}: starting...");
+
+            if (_requestsCounter <= 2)
+            {
+                Console.WriteLine($"Request {_requestsCounter}: Delaying...");
+                await Task.Delay(TimeSpan.FromSeconds(10));
+            }
+            if (_requestsCounter <= 4)
+            {
+                Console.WriteLine($"Request {_requestsCounter}: 500 (Internal Server Error).");
+                return StatusCode(500);
+            }
+
+            var itemDtos = (await _itemsRepository.GetAllAsync()).Select(item => item.AsDto());
+            Console.WriteLine($"Request {_requestsCounter}: 200 (OK).");
+
+            return Ok(itemDtos);
         }
 
         // GET /items/{id}
