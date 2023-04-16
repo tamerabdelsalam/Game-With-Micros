@@ -25,22 +25,7 @@ namespace Play.Catalog.Service.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ItemDto>>> GetAsync()
         {
-            _requestsCounter++;
-            Console.WriteLine($"Request {_requestsCounter}: starting...");
-
-            if (_requestsCounter <= 2)
-            {
-                Console.WriteLine($"Request {_requestsCounter}: Delaying...");
-                await Task.Delay(TimeSpan.FromSeconds(10));
-            }
-            if (_requestsCounter <= 4)
-            {
-                Console.WriteLine($"Request {_requestsCounter}: 500 (Internal Server Error).");
-                return StatusCode(500);
-            }
-
             var itemDtos = (await _itemsRepository.GetAllAsync()).Select(item => item.AsDto());
-            Console.WriteLine($"Request {_requestsCounter}: 200 (OK).");
 
             return Ok(itemDtos);
         }

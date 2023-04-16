@@ -6,7 +6,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Play.Catalog.Service.Enities;
 using Play.Common.MongoDB;
-using Play.Common.Settings;
 
 namespace Play.Catalog.Service
 {
