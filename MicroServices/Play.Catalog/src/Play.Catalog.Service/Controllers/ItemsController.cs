@@ -14,8 +14,7 @@ namespace Play.Catalog.Service.Controllers
     public class ItemsController : ControllerBase
     {
         private readonly IRepository<Item> _itemsRepository;
-        private static int _requestsCounter = 0;
-
+        
         public ItemsController(IRepository<Item> itemsRepository)
         {
             _itemsRepository = itemsRepository;
