@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Play.Catalog.Service.Enities;
-using Play.Catalog.Service.Settings;
+using Play.Common.MassTransit;
 using Play.Common.MongoDB;
 using Play.Common.Settings;
 
@@ -25,23 +25,11 @@ namespace Play.Catalog.Service
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var serviceSettings= _configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
+            var serviceSettings = _configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
 
             services.AddMongo()
-                    .AddMongoRepository<Item>("items");
-
-            services.AddMassTransit(config =>
-            {
-                config.UsingRabbitMq((context, configurator) =>
-                {
-                    var rabbitMQSettings = _configuration.GetSection(nameof(RabbitMQSettings)).Get<RabbitMQSettings>();
-                        configurator.Host(rabbitMQSettings.Host);
-                        //Optianl configuration to allow defining or modifying how Queues are created in Rabbit MQ
-                        configurator.ConfigureEndpoints(context,new KebabCaseEndpointNameFormatter(serviceSettings.ServiceName,false));
-                });
-            })
-            //  Start the Rabbit MQ Bus For messages to be published to Exchanges and Queues of Rabbit MQ.
-            .AddMassTransitHostedService( );            
+                    .AddMongoRepository<Item>("items")
+                    .AddMassTransitWithRabbitMQ();
 
             services.AddControllers(options =>
             {

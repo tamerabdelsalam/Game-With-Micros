@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Play.Catalog.Service.Dtos;
 using Play.Catalog.Service.Enities;
 using Play.Common.Interfaces;
-using static Play.Catalog.Contracts.Contracts;
+using Play.Catalog.Contracts;
 
 namespace Play.Catalog.Service.Controllers
 {
