@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using GreenPipes;
 using MassTransit;
 using MassTransit.Definition;
 using Microsoft.Extensions.Configuration;
@@ -26,6 +27,7 @@ public static class Extensions
                 var rabbitMQSettings = configuration.GetSection(nameof(RabbitMQSettings)).Get<RabbitMQSettings>();
                 configuator.Host(rabbitMQSettings.Host);
                 configuator.ConfigureEndpoints(context, new KebabCaseEndpointNameFormatter(serviceSettings.ServiceName, false));
+                configuator.UseMessageRetry((retryConfigurator) => { retryConfigurator.Interval(3, TimeSpan.FromSeconds(5)); });
             });
         });
 

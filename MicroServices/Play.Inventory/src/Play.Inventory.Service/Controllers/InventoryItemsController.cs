@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Play.Common.Interfaces;
-using Play.Inventory.Service.Clients;
 using Play.Inventory.Service.Dtos;
 using Play.Inventory.Service.Entities;
 
@@ -15,12 +14,12 @@ namespace Play.Inventory.Service.Controllers;
 public class InventoryItemsController : ControllerBase
 {
     private readonly IRepository<InventoryItem> _invItemsRepository;
-    private readonly CatalogClient _catalogClient;
+    private readonly IRepository<CatalogItem> _catalogItemRepository;
 
-    public InventoryItemsController(IRepository<InventoryItem> invItemsRepository, CatalogClient catalogClient)
+    public InventoryItemsController(IRepository<InventoryItem> invItemsRepository, IRepository<CatalogItem> catalogItemRepository)
     {
         _invItemsRepository = invItemsRepository;
-        _catalogClient = catalogClient;
+        _catalogItemRepository = catalogItemRepository;
     }
 
     [HttpGet("{userId}")]
@@ -31,15 +30,16 @@ public class InventoryItemsController : ControllerBase
             return BadRequest();
         }
 
-        var catalogItemDtos = await _catalogClient.GetCatalogItemsAsync();
+        var userInvItems = await _invItemsRepository.GetAllAsync(invItem => invItem.UserId == userId);
+        var catalogItemsIds = userInvItems.Select(userInvItem => userInvItem.CatalogItemId).ToList();
 
-        var invItems = (await _invItemsRepository.GetAllAsync(invItem => invItem.UserId == userId));
+        var userCatalogItems = await _catalogItemRepository.GetAllAsync(catalogItem => catalogItemsIds.Contains(catalogItem.Id));
 
-        var invItemDtos = invItems.Select(invItem =>
+        var invItemDtos = userInvItems.Select(userInvItem =>
         {
-            var catalogItem = catalogItemDtos.Single(catalogItemDto => catalogItemDto.Id == invItem.CatalogItemId);
+            var catalogItem = userCatalogItems.Single(userCatalogItem => userCatalogItem.Id == userInvItem.CatalogItemId);
 
-            return invItem.AsDto(catalogItem.Name, catalogItem.Description);
+            return userInvItem.AsDto(catalogItem.Name, catalogItem.Description);
         });
 
         return Ok(invItemDtos);
@@ -62,7 +62,7 @@ public class InventoryItemsController : ControllerBase
             {
                 Id = Guid.NewGuid(),
                 CatalogItemId = grantItemsDto.CatalogItemId,
-                Qunatity = grantItemsDto.Qunatity,
+                Quantity = grantItemsDto.Quantity,
                 AquiredDate = DateTimeOffset.UtcNow,
                 UserId = grantItemsDto.UserId
             };
@@ -73,7 +73,7 @@ public class InventoryItemsController : ControllerBase
         }
 
         existingInvItem.CatalogItemId = grantItemsDto.CatalogItemId;
-        existingInvItem.Qunatity = grantItemsDto.Qunatity;
+        existingInvItem.Quantity = grantItemsDto.Quantity;
 
         await _invItemsRepository.UpdateAsync(existingInvItem);
 
